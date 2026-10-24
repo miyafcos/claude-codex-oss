@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec "$(cygpath -u "$USERPROFILE")/bin/claude-codex-fugu.cmd" "$@"

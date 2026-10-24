@@ -1,0 +1,27 @@
+*.log
+*.tmp
+*.bak
+Thumbs.db
+.DS_Store
+__pycache__/
+*.pyc
+dist/
+bench/results/
+bench/baseline/
+
+patches/.upstream-base/
+patches/.upgrade-reports/
+.env
+.env.*
+credentials*
+**/credentials*
+**/tokens/
+.venv/
+.pytest_cache/
+settings.personal.json
+*.trace.jsonl
+
+# git worktree scratch dirs (per-agent ephemeral working trees)
+.claude/worktrees/
+# Native launcher build output.
+launchers/native/target/

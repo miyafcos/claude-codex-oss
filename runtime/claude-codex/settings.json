@@ -1,0 +1,45 @@
+{
+  "effortLevel": "xhigh",
+  "language": "japanese",
+  "permissions": {
+    "defaultMode": "default"
+  },
+  "modelPicker": {
+    "replaceBuiltInOptions": true,
+    "options": [
+      {
+        "model": "gpt-6.1-sol",
+        "label": "GPT-6.1 Sol",
+        "description": "通常作業（推奨）",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "gpt-6-astra",
+        "label": "GPT-6 Astra",
+        "description": "独立検証・難所",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "gpt-6-luna",
+        "label": "GPT-6 Luna",
+        "description": "軽い作業（手動選択）",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "claude-opus-5-5",
+        "label": "Claude Opus 5.5",
+        "description": "判断・レビュー"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "label": "Claude Sonnet 5.5",
+        "description": "実装・制作"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "label": "Claude Haiku 5.5",
+        "description": "軽い検索・抽出"
+      }
+    ]
+  }
+}

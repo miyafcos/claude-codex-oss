@@ -1,0 +1,19 @@
+[project]
+name = "claude-codex-hybrid"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[dependency-groups]
+dev = [
+    "fastapi==0.136.1",
+    "httpx==0.28.1",
+    "pydantic>=2,<3",
+    "pytest>=8.3,<9",
+    "python-dotenv==1.2.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: requires running ccproxy and claude-codex CLI (opt-in via -m integration)",
+]

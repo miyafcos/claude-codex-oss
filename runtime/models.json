@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 2,
+  "defaultBackend": "gpt",
+  "defaultModel": "gpt-6.1-sol",
+  "modelPicker": {
+    "replaceBuiltInOptions": true,
+    "options": [
+      {
+        "model": "gpt-6.1-sol",
+        "label": "GPT-6.1 Sol",
+        "description": "通常作業（推奨）",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "gpt-6-astra",
+        "label": "GPT-6 Astra",
+        "description": "独立検証・難所",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "gpt-6-luna",
+        "label": "GPT-6 Luna",
+        "description": "軽い作業（手動選択）",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "claude-opus-5-5",
+        "label": "Claude Opus 5.5",
+        "description": "判断・レビュー"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "label": "Claude Sonnet 5.5",
+        "description": "実装・制作"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "label": "Claude Haiku 5.5",
+        "description": "軽い検索・抽出"
+      }
+    ]
+  },
+  "availableModels": [
+    "gpt-6.1-sol",
+    "gpt-6-astra",
+    "gpt-6-sol",
+    "gpt-6-luna",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna"
+  ],
+  "aliases": {
+    "fable": "gpt-6-astra",
+    "opus": "gpt-6-astra",
+    "sonnet": "gpt-6.1-sol",
+    "haiku": "gpt-6-luna",
+    "subagent": "gpt-6.1-sol"
+  },
+  "disallowedAliasTargets": [
+    "gpt-5.3-codex-spark"
+  ],
+  "display": {
+    "name": "GPT-6",
+    "fableName": "GPT-6 Astra",
+    "opusName": "GPT-6 Astra",
+    "sonnetName": "GPT-6.1 Sol",
+    "haikuName": "GPT-6 Luna",
+    "fableDescription": "Frontier OpenAI subscription route via Codex backend (GPT-6 Astra)",
+    "opusDescription": "Frontier OpenAI subscription route via Codex backend (GPT-6 Astra)",
+    "sonnetDescription": "Balanced workhorse OpenAI subscription route via Codex backend (GPT-6.1 Sol, 2026-10-13 standard)",
+    "haikuDescription": "Fast OpenAI subscription route via Codex backend (GPT-6 Luna)"
+  },
+  "capabilities": [
+    "effort",
+    "xhigh_effort",
+    "max_effort",
+    "thinking",
+    "adaptive_thinking",
+    "interleaved_thinking"
+  ],
+  "modelCards": [
+    {
+      "id": "gpt-6.1-sol",
+      "created": 1790726400,
+      "owned_by": "openai"
+    },
+    {
+      "id": "gpt-6-astra",
+      "created": 1788393600,
+      "owned_by": "openai"
+    },
+    {
+      "id": "gpt-6-luna",
+      "created": 1788393600,
+      "owned_by": "openai"
+    },
+    {
+      "id": "gpt-6-sol",
+      "created": 1788393600,
+      "owned_by": "openai"
+    },
+    {
+      "id": "gpt-5.6-sol",
+      "created": 1782864000,
+      "owned_by": "openai"
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "created": 1782864000,
+      "owned_by": "openai"
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "created": 1782864000,
+      "owned_by": "openai"
+    }
+  ],
+  "mappingRules": [
+    {
+      "match": "gpt-6.1-sol",
+      "target": "gpt-6.1-sol",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-6-astra",
+      "target": "gpt-6-astra",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-6-sol",
+      "target": "gpt-6-sol",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-6-luna",
+      "target": "gpt-6-luna",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-5.6-sol",
+      "target": "gpt-5.6-sol",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-5.6-terra",
+      "target": "gpt-5.6-terra",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-5.6-luna",
+      "target": "gpt-5.6-luna",
+      "kind": "exact"
+    },
+    {
+      "match": "claude-",
+      "target": "gpt-6-astra",
+      "kind": "prefix"
+    }
+  ],
+  "_backendsDoc": "schemaVersion 2: per-backend profiles. GPT, Claude, and Fugu share /router discovery. FCC is isolated at /router/fcc because Claude Code 2.1.237 has one process-wide context guard and cannot safely mix its 52k context with 200k models. --backend selects the pinned initial model and family aliases.",
+  "backends": {
+    "gpt": {
+      "baseUrlPath": "/router",
+      "defaultModel": "gpt-6.1-sol",
+      "contextTokens": 1000000,
+      "subagentModel": "gpt-6.1-sol",
+      "availableModels": [
+        "gpt-6.1-sol",
+        "gpt-6-astra",
+        "gpt-6-sol",
+        "gpt-6-luna",
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "gpt-5.6-luna"
+      ],
+      "aliases": {
+        "fable": "gpt-6-astra",
+        "opus": "gpt-6-astra",
+        "sonnet": "gpt-6.1-sol",
+        "haiku": "gpt-6-luna",
+        "subagent": "gpt-6.1-sol"
+      },
+      "capabilities": [
+        "effort",
+        "xhigh_effort",
+        "max_effort",
+        "thinking",
+        "adaptive_thinking",
+        "interleaved_thinking"
+      ],
+      "display": {
+        "name": "GPT-6",
+        "fableName": "GPT-6 Astra",
+        "opusName": "GPT-6 Astra",
+        "sonnetName": "GPT-6.1 Sol",
+        "haikuName": "GPT-6 Luna",
+        "fableDescription": "Frontier OpenAI subscription route via Codex backend (GPT-6 Astra)",
+        "opusDescription": "Frontier OpenAI subscription route via Codex backend (GPT-6 Astra)",
+        "sonnetDescription": "Balanced workhorse OpenAI subscription route via Codex backend (GPT-6.1 Sol, 2026-10-13 standard)",
+        "haikuDescription": "Fast OpenAI subscription route via Codex backend (GPT-6 Luna)"
+      }
+    },
+    "claude": {
+      "baseUrlPath": "/router",
+      "defaultModel": "claude-opus-5-5",
+      "subagentModel": "claude-opus-5-5",
+      "availableModels": [
+        "claude-opus-5-5",
+        "claude-fable-5-1",
+        "claude-sonnet-5",
+        "claude-haiku-4-5",
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "aliases": {
+        "fable": "claude-fable-5-1",
+        "opus": "claude-opus-5-5",
+        "sonnet": "claude-sonnet-5-5",
+        "haiku": "claude-haiku-5-5",
+        "subagent": "claude-opus-5-5"
+      },
+      "capabilities": [
+        "effort",
+        "xhigh_effort",
+        "max_effort",
+        "thinking",
+        "adaptive_thinking",
+        "interleaved_thinking"
+      ],
+      "display": {
+        "name": "Claude (subscription)",
+        "fableName": "Claude Fable 5.1",
+        "opusName": "Claude Opus 5.5",
+        "sonnetName": "Claude Sonnet 5.5",
+        "haikuName": "Claude Haiku 5.5",
+        "fableDescription": "Claude Fable 5.1 final synthesis and quality-gate route via Anthropic native (OAuth)",
+        "opusDescription": "Claude Opus 5.5 mothership route via Anthropic native (OAuth, 2026-09-23 default)",
+        "sonnetDescription": "Claude Sonnet 5.5 standard work and implementation route via Anthropic native (OAuth)",
+        "haikuDescription": "Claude Haiku 5.5 fast background route via Anthropic native (OAuth)"
+      }
+    },
+    "gemini": {
+      "baseUrlPath": "/router",
+      "defaultModel": "gemini-3.5-flash",
+      "subagentModel": "gemini-3.5-flash",
+      "availableModels": [
+        "gemini-3.1-pro-preview",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite"
+      ],
+      "aliases": {
+        "fable": "gemini-3.1-pro-preview",
+        "opus": "gemini-3.1-pro-preview",
+        "sonnet": "gemini-3.5-flash",
+        "haiku": "gemini-3.1-flash-lite",
+        "subagent": "gemini-3.5-flash"
+      },
+      "capabilities": [],
+      "display": {
+        "name": "Gemini (CLI 1-shot)",
+        "fableName": "Gemini 3.1 Pro Preview",
+        "opusName": "Gemini 3.1 Pro Preview",
+        "sonnetName": "Gemini 3.5 Flash",
+        "haikuName": "Gemini 3.1 Flash-Lite",
+        "fableDescription": "Gemini 3.1 Pro Preview high-quality alternative view via CLI (one-shot, no tool-use)",
+        "opusDescription": "Gemini 3.1 Pro Preview high-quality alternative view via CLI (one-shot, no tool-use)",
+        "sonnetDescription": "Gemini 3.5 Flash stable research and summarization route via CLI (one-shot, no tool-use)",
+        "haikuDescription": "Gemini 3.1 Flash-Lite stable lightweight route via CLI (one-shot, no tool-use)"
+      }
+    },
+    "fugu": {
+      "baseUrlPath": "/router",
+      "defaultModel": "fugu-ultra",
+      "subagentModel": "fugu",
+      "availableModels": [
+        "fugu-ultra",
+        "fugu",
+        "fugu-ultra-20260615"
+      ],
+      "aliases": {
+        "fable": "fugu-ultra",
+        "opus": "fugu-ultra",
+        "sonnet": "fugu-ultra",
+        "haiku": "fugu",
+        "subagent": "fugu"
+      },
+      "capabilities": [
+        "thinking"
+      ],
+      "display": {
+        "name": "Fugu (Sakana AI)",
+        "fableName": "Fugu Ultra",
+        "opusName": "Fugu Ultra",
+        "sonnetName": "Fugu Ultra",
+        "haikuName": "Fugu",
+        "fableDescription": "Fugu Ultra — multi-agent council (orchestrates frontier LLMs server-side)",
+        "opusDescription": "Fugu Ultra — multi-agent council (orchestrates frontier LLMs server-side)",
+        "sonnetDescription": "Fugu Ultra — multi-agent council",
+        "haikuDescription": "Fugu (fast mini, low-latency single-model)"
+      }
+    },
+    "fcc": {
+      "baseUrlPath": "/router/fcc",
+      "defaultModel": "fcc-default",
+      "subagentModel": "fcc-default",
+      "_contextTokensNote": "Measured 2026-08-09 against the local Qwen 9B route. Claude Code's system prompt and tool definitions consume roughly 26k-32k tokens before conversation content, so the declared context must preserve room for real work. The local model needs a 65536-token Ollama context to accept that prompt; 52000 lets Claude Code auto-compact at its usual 80% threshold before the model context is exhausted. On the 8GB GPU, the 64k model context is partly CPU-offloaded, so this route is for low-cost local work rather than low-latency interactive use.",
+      "contextTokens": 52000,
+      "availableModels": [
+        "fcc-default"
+      ],
+      "aliases": {
+        "fable": "fcc-default",
+        "opus": "fcc-default",
+        "sonnet": "fcc-default",
+        "haiku": "fcc-default",
+        "subagent": "fcc-default"
+      },
+      "capabilities": [
+        "thinking"
+      ],
+      "display": {
+        "name": "Open Models (FCC)",
+        "fableName": "Open Models Default",
+        "opusName": "Open Models Default",
+        "sonnetName": "Open Models Default",
+        "haikuName": "Open Models Default",
+        "fableDescription": "Current Free Claude Code open-model route",
+        "opusDescription": "Current Free Claude Code open-model route",
+        "sonnetDescription": "Current Free Claude Code open-model route",
+        "haikuDescription": "Current Free Claude Code open-model route"
+      }
+    }
+  }
+}

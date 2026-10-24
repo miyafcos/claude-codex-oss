@@ -1,0 +1,7 @@
+{
+  "_comment": "任意の利用者設定例です。既存settings.jsonを上書きせず、必要な項目だけ利用者自身が追加してください。",
+  "language": "japanese",
+  "permissions": {
+    "defaultMode": "default"
+  }
+}

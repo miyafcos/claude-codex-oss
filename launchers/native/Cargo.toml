@@ -1,0 +1,23 @@
+[package]
+name = "claude-codex-native"
+version = "0.1.0"
+edition = "2021"
+default-run = "claude-codex-native"
+
+[dependencies]
+serde = "=1.0.228"
+serde_json = "=1.0.149"
+sha2 = "=0.10.9"
+regex = "=1.12.3"
+
+[profile.release]
+strip = true
+lto = "thin"
+
+[[bin]]
+name = "claude-codex-native"
+path = "src/main.rs"
+
+[[bin]]
+name = "launcher-test-child"
+path = "src/test_child.rs"

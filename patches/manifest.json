@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "upstreamVersion": "0.2.10",
+  "upstreamFiles": [
+    "llms/formatters/anthropic_to_openai/requests.py",
+    "llms/formatters/anthropic_to_openai/streams.py",
+    "plugins/codex/adapter.py",
+    "plugins/codex/model_defaults.py",
+    "plugins/claude_api/routes.py",
+    "services/adapters/simple_converters.py",
+    "services/adapters/delta_utils.py",
+    "streaming/buffer.py",
+    "llms/formatters/utils.py",
+    "llms/formatters/openai_to_anthropic/streams.py",
+    "streaming/deferred.py"
+  ],
+  "addedFiles": [
+    "llms/formatters/anthropic_to_openai/compaction.py",
+    "llms/formatters/anthropic_to_openai/reasoning_models.py",
+    "llms/formatters/usage_contract.py",
+    "plugins/codex/bridge_identity.py",
+    "plugins/codex/bridge_metadata.py",
+    "plugins/codex/replay_state.py",
+    "streaming/sse_events.py"
+  ]
+}

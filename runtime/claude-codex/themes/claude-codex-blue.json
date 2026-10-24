@@ -1,0 +1,7 @@
+{
+  "name": "Claude Codex Blue",
+  "base": "dark-daltonized",
+  "overrides": {
+    "clawd_body": "#7A9DFF"
+  }
+}
