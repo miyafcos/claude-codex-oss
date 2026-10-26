@@ -372,6 +372,58 @@ $copyMap = @(
     @{
         Source = Join-Path $RepoRoot "runtime\ccproxy-plugins\fcc\plugin.py"
         Target = Join-Path $HomeDir ".config\ccproxy\plugins\fcc\plugin.py"
+    }
+    @{
+        Source = Join-Path $RepoRoot "runtime\ccproxy-plugins\nanogpt\__init__.py"
+        Target = Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt\__init__.py"
+    }
+    @{
+        Source = Join-Path $RepoRoot "runtime\ccproxy-plugins\nanogpt\config.py"
+        Target = Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt\config.py"
+    }
+    @{
+        Source = Join-Path $RepoRoot "runtime\ccproxy-plugins\nanogpt\adapter.py"
+        Target = Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt\adapter.py"
+    }
+    @{
+        Source = Join-Path $RepoRoot "runtime\ccproxy-plugins\nanogpt\credentials.py"
+        Target = Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt\credentials.py"
+    }
+    @{
+        Source = Join-Path $RepoRoot "runtime\ccproxy-plugins\nanogpt\plugin.py"
+        Target = Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt\plugin.py"
+    },
+    @{
+        Source = Join-Path $RepoRoot "runtime\claude-codex\subagent-models.json"
+        Target = Join-Path $TargetClaudeCodex "config\subagent-models.json"
+    },
+    @{
+        Source = Join-Path $RepoRoot "scripts\resolve-subagent.py"
+        Target = Join-Path $TargetClaudeCodex "config\resolve-subagent.py"
+    },
+    @{
+        Source = Join-Path $RepoRoot "scripts\subagent_models.py"
+        Target = Join-Path $TargetClaudeCodex "config\subagent_models.py"
+    },
+    @{
+        Source = Join-Path $RepoRoot "runtime\claude-codex\subagent-models.json"
+        Target = Join-Path $TargetClaudeCodex "config-slim\subagent-models.json"
+    },
+    @{
+        Source = Join-Path $RepoRoot "scripts\resolve-subagent.py"
+        Target = Join-Path $TargetClaudeCodex "config-slim\resolve-subagent.py"
+    },
+    @{
+        Source = Join-Path $RepoRoot "scripts\subagent_models.py"
+        Target = Join-Path $TargetClaudeCodex "config-slim\subagent_models.py"
+    },
+    @{
+        Source = Join-Path $RepoRoot "scripts\agent-model-guard.py"
+        Target = Join-Path $HomeDir ".claude\scripts\agent-model-guard.py"
+    },
+    @{
+        Source = Join-Path $RepoRoot "scripts\subagent_models.py"
+        Target = Join-Path $HomeDir ".claude\scripts\subagent_models.py"
     },
     @{
         Source = Join-Path $RepoRoot "patches\ccproxy\services\adapters\simple_converters.py"
@@ -418,6 +470,58 @@ function Test-SettingEqual {
     return (($Left | ConvertTo-Json -Depth 100 -Compress) -ceq ($Right | ConvertTo-Json -Depth 100 -Compress))
 }
 
+function Test-SubagentGuardHook {
+    param($Value)
+    return ($null -ne $Value -and ($Value | ConvertTo-Json -Depth 100 -Compress) -match 'agent-model-guard(?:\.py)?')
+}
+
+function Merge-SubagentGuardHook {
+    param($Existing, $Generated, $Previous = $null)
+    # Only this dedicated hook is array-merged; all other settings keep their
+    # existing ownership rules. Unrelated hooks and their order stay intact.
+    $desiredRows = @($Generated)
+    if ($desiredRows.Count -ne 1 -or @($desiredRows[0].hooks).Count -ne 1) {
+        throw 'Unexpected generated child guard hook'
+    }
+    $desired = $desiredRows[0]
+    $result = @()
+    $found = 0
+    foreach ($row in @($Existing)) {
+        if ($null -eq $row) { continue }
+        if (Test-SubagentGuardHook $row) {
+            if (-not $row.PSObject.Properties['matcher'] -or
+                $row.matcher -cne $desired.matcher -or
+                -not $row.PSObject.Properties['hooks'] -or
+                $row.hooks -isnot [array] -or
+                @($row.PSObject.Properties).Count -ne 2) {
+                throw 'Unknown or edited child guard hook'
+            }
+            foreach ($hook in $row.hooks) {
+                if (Test-SubagentGuardHook $hook) {
+                    $found++
+                    if (@($hook.PSObject.Properties).Count -ne @($desired.hooks[0].PSObject.Properties).Count) {
+                        throw 'Unknown or edited child guard hook'
+                    }
+                    foreach ($property in $desired.hooks[0].PSObject.Properties) {
+                        $actual = $hook.PSObject.Properties[$property.Name]
+                        if (-not $actual -or -not (Test-SettingEqual $actual.Value $property.Value)) {
+                            throw 'Unknown or edited child guard hook'
+                        }
+                    }
+                }
+            }
+        }
+        $result += $row
+    }
+    if ($found -gt 1) { throw 'Duplicate child guard hooks' }
+    if ($found -eq 0 -and (Test-SubagentGuardHook $Previous)) {
+        throw 'Locally removed or edited owned child guard hook'
+    }
+    if ($found -eq 0) { $result += $desired }
+    # Do not let PowerShell unwrap a one-element array into a scalar.
+    return ,$result
+}
+
 function Merge-OwnedSettings {
     param([object]$Existing, [object]$Generated, [object]$Previous = $null, [string]$Path = "settings")
     if ($null -eq $Existing) { $Existing = [pscustomobject]@{} }
@@ -428,6 +532,11 @@ function Merge-OwnedSettings {
         $current = $Existing.PSObject.Properties[$name]
         $desired = $Generated.PSObject.Properties[$name]
         $prior = if ($null -ne $Previous) { $Previous.PSObject.Properties[$name] } else { $null }
+        if ($name -ceq 'PreToolUse' -and $Path.EndsWith('.hooks') -and $desired -and (Test-SubagentGuardHook $desired.Value)) {
+            $value = Merge-SubagentGuardHook $(if ($current) { $current.Value } else { $null }) $desired.Value $(if ($prior) { $prior.Value } else { $null })
+            $Existing | Add-Member -NotePropertyName $name -NotePropertyValue $value -Force
+            continue
+        }
         if ($desired -and $desired.Value -is [pscustomobject] -and (-not $current -or $current.Value -is [pscustomobject]) -and (-not $prior -or $prior.Value -is [pscustomobject])) {
             $value = Merge-OwnedSettings -Existing $(if ($current) { $current.Value } else { $null }) -Generated $desired.Value -Previous $(if ($prior) { $prior.Value } else { $null }) -Path "$Path.$name"
             $Existing | Add-Member -NotePropertyName $name -NotePropertyValue $value -Force
@@ -500,6 +609,13 @@ function Get-SettingsInstallValue {
     if (-not $exists -and $prior -and -not $adopt) { throw "Locally removed settings file: $($Entry.Target); explicitly adopt to recreate." }
     $existing = if ($exists) { ConvertFrom-Json ([IO.File]::ReadAllText($Entry.Target, [Text.Encoding]::UTF8)) } else { $null }
     $generated = ConvertFrom-Json ([IO.File]::ReadAllText($Entry.Source, [Text.Encoding]::UTF8))
+    if ($adopt -and $exists -and $prior -and $prior.PSObject.Properties['hooks'] -and
+        $prior.hooks.PSObject.Properties['PreToolUse'] -and (Test-SubagentGuardHook $prior.hooks.PreToolUse)) {
+        # Adoption of other settings cannot erase the guard ownership history.
+        $existingHooks = if ($existing -and $existing.PSObject.Properties['hooks'] -and
+            $existing.hooks -is [pscustomobject] -and $existing.hooks.PSObject.Properties['PreToolUse']) { $existing.hooks.PreToolUse } else { $null }
+        $null = Merge-SubagentGuardHook $existingHooks $generated.hooks.PreToolUse $prior.hooks.PreToolUse
+    }
     if ($adopt) { $prior = Get-OwnedExisting $existing $generated }
     return Merge-OwnedSettings $existing $generated $prior $Entry.Target
 }
@@ -520,7 +636,9 @@ function Get-InstallConflicts {
         }
         if (-not (Test-Path -LiteralPath $entry.Target)) { continue }
         $adopt = $entry.Target -in $AdoptInstalled
-        if ($adopt) { continue }
+        # A shared guard may only be identical or unchanged since our manifest.
+        # Explicit adoption must not silently replace an unknown user guard.
+        if ($adopt -and $entry.Target -ne (Join-Path $HomeDir '.claude\scripts\agent-model-guard.py')) { continue }
         $actual = (Get-FileHash -LiteralPath $entry.Target -Algorithm SHA256).Hash
         if ($entry.Target -match '\.exe$') {
             if ($actual -eq (Get-FileHash -LiteralPath $entry.Source -Algorithm SHA256).Hash) { continue }
@@ -903,7 +1021,8 @@ $pluginChecks = @(
     @{ Name = "dispatcher"; Path = (Join-Path $HomeDir ".config\ccproxy\plugins\dispatcher\plugin.py") },
     @{ Name = "gemini_cli"; Path = (Join-Path $HomeDir ".config\ccproxy\plugins\gemini_cli\plugin.py") },
     @{ Name = "fugu"; Path = (Join-Path $HomeDir ".config\ccproxy\plugins\fugu\plugin.py") },
-    @{ Name = "fcc"; Path = (Join-Path $HomeDir ".config\ccproxy\plugins\fcc\plugin.py") }
+    @{ Name = "fcc"; Path = (Join-Path $HomeDir ".config\ccproxy\plugins\fcc\plugin.py") },
+    @{ Name = "nanogpt"; Path = (Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt\plugin.py") }
 )
 $pluginMissing = @($pluginChecks | Where-Object { -not (Test-Path $_.Path) })
 if ($pluginMissing.Count -gt 0) {
@@ -913,7 +1032,7 @@ if ($pluginMissing.Count -gt 0) {
     Write-Host "  Dispatcher/Gemini routing will not work until these are present." -ForegroundColor Yellow
 }
 else {
-    Write-Host "Multiprovider plugins present: dispatcher, gemini_cli, fugu, fcc (discovered via [plugin_discovery])."
+    Write-Host "Multiprovider plugins present: dispatcher, gemini_cli, fugu, fcc, nanogpt (discovered via [plugin_discovery])."
 }
 
 # === claude_api routes patch applied? (Claude backend が 422 になるのを防ぐ) ===

@@ -29,9 +29,13 @@ const PS_ENV_READS: &[&str] = &[
     "CLAUDE_CODEX_PROXY_FASTPATH",
     "CLAUDE_CODEX_PROXY_TOKEN",
     "CLAUDE_CODEX_PROXY_URL",
+    "CLAUDE_CODEX_PYTHON_EXE",
     "CLAUDE_CODEX_SKILL_PROFILE",
     "CLAUDE_CODEX_SKIP_FCC_START",
     "CLAUDE_CODEX_SKIP_ROUTER_SMOKE",
+    "CLAUDE_CODEX_SUBAGENT_AGENTS",
+    "CLAUDE_CODEX_SUBAGENT_CONTEXT",
+    "CLAUDE_CODEX_SUBAGENT_SESSION",
     "CLAUDE_CODEX_ULTRACODE",
     "CLAUDE_CODE_EFFORT_LEVEL",
     "CLAUDE_CODE_MAX_CONTEXT_TOKENS",
@@ -55,7 +59,8 @@ pub fn empty_ps_environment(env: &Env) -> bool {
 }
 // Normalized UTF-8 text: remove the BOM and fold CRLF to LF, nothing else.
 // Each version records the observable difference, not just its digest.
-pub const SUPPORTED_PS_VERSIONS: [(&str, bool); 3] = [
+pub const SUPPORTED_PS_VERSIONS: [(&str, bool); 4] = [
+    ("865244cae30c866fb8f472e3304b01a8fa8e9200d6014375f8d998a91754fdf6", true), // proposed current source; parity acceptance required
     (
         "1f48ee8b042c2258753cfeed416fd71182f1ee984f811486109d52eacfc8f372",
         false,
@@ -236,7 +241,19 @@ pub struct Eligible {
     pub token: String,
     pub base: String,
 }
+pub fn has_subagent_options(args: &[String]) -> bool {
+    args.iter().take_while(|s| s.as_str() != "--").any(|s| {
+        s == "--subagent" || s.starts_with("--subagent=") || s == "--list-subagent-models"
+    })
+}
 pub fn preflight(paths: &Paths, args: &[String], original: &Env) -> Result<Eligible, &'static str> {
+    if has_subagent_options(args) {
+        return Err("explicit-subagent-options");
+    }
+    if ["CLAUDE_CODEX_SUBAGENT_CONTEXT", "CLAUDE_CODEX_SUBAGENT_SESSION", "CLAUDE_CODEX_SUBAGENT_AGENTS"]
+        .iter().any(|name| get(original, name).is_some()) {
+        return Err("inherited-subagent-session");
+    }
     let ps = proxy::text(&paths.ps).map_err(|_| "ps-launcher-missing")?;
     let digest = proxy::sha(ps.as_bytes());
     let aliases_notice = SUPPORTED_PS_VERSIONS
@@ -693,6 +710,25 @@ pub fn legacy_arguments(args: &[String]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn explicit_child_options_delegate_before_paths_and_auth() {
+        for args in [
+            vec!["--subagent".into(), "deepseek=high".into()],
+            vec!["--subagent=glm-thinking=max".into()],
+            vec!["--list-subagent-models".into()],
+        ] {
+            assert!(has_subagent_options(&args));
+            let paths = Paths::new(Path::new(r"C:\fixture\claude-codex.exe"), &Env::from([
+                ("CLAUDE_CODEX_HOME".into(), r"C:\fixture\home".into()),
+                ("USERPROFILE".into(), r"C:\fixture\home".into()),
+                ("APPDATA".into(), r"C:\fixture\appdata".into()),
+            ])).unwrap();
+            assert_eq!(preflight(&paths, &args, &Env::new()).err(), Some("explicit-subagent-options"));
+        }
+        assert!(!has_subagent_options(&[]));
+        assert!(!has_subagent_options(&["-p".into(), "synthetic".into()]));
+        assert!(!has_subagent_options(&["--".into(), "--subagent".into()]));
+    }
     #[test]
     fn redaction() {
         let before = Env::new();

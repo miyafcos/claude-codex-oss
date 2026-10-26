@@ -127,6 +127,11 @@ fn run(start: Instant) -> io::Result<i32> {
     {
         return use_fallback(mode, &mut trace, &ps, &raw, &tail, "environment-encoding");
     }
+    // Delegate before paths/proxy/auth are resolved, including offline listing.
+    let child_args: Vec<String> = raw.iter().map(|s| s.to_string_lossy().into_owned()).collect();
+    if config::has_subagent_options(&child_args) {
+        return use_fallback(mode, &mut trace, &ps, &raw, &tail, "explicit-subagent-options");
+    }
     if !mode.eq_ignore_ascii_case("probe") && config::empty_ps_environment(&env) {
         return use_fallback(mode, &mut trace, &ps, &raw, &tail, "environment-empty");
     }

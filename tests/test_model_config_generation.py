@@ -161,14 +161,14 @@ def test_generated_settings_does_not_block_dynamic_gateway_models() -> None:
     assert "model" not in settings
 
 
-def test_model_picker_contains_six_models_in_order() -> None:
+def test_model_picker_preserves_existing_models_and_adds_nanogpt() -> None:
     models = gen._load_models(_MODELS_JSON)
     settings = gen._settings_payload(models)
     picker = settings["modelPicker"]
 
     assert picker == models["modelPicker"]
     assert picker["replaceBuiltInOptions"] is True
-    assert [option["model"] for option in picker["options"]] == [
+    assert [option["model"] for option in picker["options"][:6]] == [
         "gpt-6.1-sol",
         "gpt-6-astra",
         "gpt-6-luna",
@@ -176,6 +176,9 @@ def test_model_picker_contains_six_models_in_order() -> None:
         "claude-sonnet-5-5",
         "claude-haiku-5-5",
     ]
+    assert [option["model"] for option in picker["options"][6:]] == models["backends"]["nanogpt"]["availableModels"]
+    assert len(picker["options"][6:]) == 5
+    assert "nanogpt" in gen.render_proxy_config(models)
     assert all(option["label"] and option["description"] for option in picker["options"])
     assert all(
         option["behavesAs"] == "claude-opus-5-5"
@@ -215,7 +218,7 @@ def test_backend_context_windows_are_positive_integers() -> None:
         if "contextTokens" in backend
     }
 
-    assert backends_with_context == {"gpt": 1000000, "fcc": 52000}
+    assert backends_with_context == {"gpt": 1000000, "nanogpt": 1000000, "fcc": 52000}
     assert all(
         isinstance(value, int) and not isinstance(value, bool) and value > 0
         for value in backends_with_context.values()

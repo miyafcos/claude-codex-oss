@@ -530,12 +530,13 @@ function Read-RunManifest {
 function Get-RuntimeGeneration {
     # A warm process is reusable only when the installed config, routing
     # plugins, and patched streaming implementation still match its manifest.
-    $paths = @($ConfigPath, $PSCommandPath, $LbScript)
+    $paths = @($ConfigPath, $PSCommandPath, $LbScript, (Join-Path $HomeDir ".claude-codex\config\models.json"))
     foreach ($dir in @(
         (Join-Path $HomeDir ".config\ccproxy\plugins\dispatcher"),
         (Join-Path $HomeDir ".config\ccproxy\plugins\fcc"),
         (Join-Path $HomeDir ".config\ccproxy\plugins\fugu"),
-        (Join-Path $HomeDir ".config\ccproxy\plugins\gemini_cli")
+        (Join-Path $HomeDir ".config\ccproxy\plugins\gemini_cli"),
+        (Join-Path $HomeDir ".config\ccproxy\plugins\nanogpt")
     )) {
         if (Test-Path -LiteralPath $dir) {
             $paths += @(Get-ChildItem -LiteralPath $dir -File -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notmatch '[\\/]__pycache__[\\/]' -and $_.Extension -notin @('.pyc', '.pyo') } | ForEach-Object { $_.FullName })

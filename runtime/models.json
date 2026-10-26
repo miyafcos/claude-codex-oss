@@ -37,6 +37,36 @@
         "model": "claude-haiku-5-5",
         "label": "Claude Haiku 5.5",
         "description": "軽い検索・抽出"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "label": "NanoGPT · GLM 5.3 Flash Uncensored",
+        "description": "サブスク限定・無検閲派生（試用）",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
+        "label": "NanoGPT · Apex Flash 1 Abliterated",
+        "description": "サブスク限定・拒否動作を変更した実験版",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-thinking",
+        "label": "NanoGPT · GLM 5.3 Thinking",
+        "description": "サブスク限定・通常モデルとの比較用",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-flash",
+        "label": "NanoGPT · GLM 5.3 Flash",
+        "description": "サブスク限定・通常Flashとの比較用",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/deepseek/deepseek-v4.1-flash-1017",
+        "label": "NanoGPT · DeepSeek V4.1 Flash 1017",
+        "description": "サブスク限定・DeepSeek比較用",
+        "behavesAs": "claude-opus-5-5"
       }
     ]
   },
@@ -157,6 +187,25 @@
       "kind": "prefix"
     }
   ],
+  "subagentModels": [
+    {"name": "sol", "model": "gpt-6.1-sol", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "astra", "model": "gpt-6-astra", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "luna", "model": "gpt-6-luna", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "gpt-6-sol", "model": "gpt-6-sol", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "gpt-5-6-sol", "model": "gpt-5.6-sol", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "gpt-5-6-terra", "model": "gpt-5.6-terra", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "gpt-5-6-luna", "model": "gpt-5.6-luna", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "claude-opus", "model": "claude-opus-5-5", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "high"},
+    {"name": "claude-fable", "model": "claude-fable-5-1", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "high"},
+    {"name": "claude-sonnet", "model": "claude-sonnet-5-5", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "high"},
+    {"name": "claude-haiku", "model": "claude-haiku-5-5", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "high"},
+    {"name": "claude-sonnet-5", "model": "claude-sonnet-5", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "high"},
+    {"name": "glm-uncensored", "model": "nanogpt/z-ai/glm-5.3-flash-uncensored", "efforts": ["low", "high"], "defaultEffort": "high"},
+    {"name": "glm-apex", "model": "nanogpt/z-ai/glm-5.3-flash-apex-abliterated", "efforts": ["low", "high", "max"], "defaultEffort": "high"},
+    {"name": "glm-thinking", "model": "nanogpt/z-ai/glm-5.3-thinking", "efforts": ["high", "max"], "defaultEffort": "high"},
+    {"name": "glm-flash", "model": "nanogpt/z-ai/glm-5.3-flash", "efforts": ["low", "high", "max"], "defaultEffort": "high"},
+    {"name": "deepseek", "model": "nanogpt/deepseek/deepseek-v4.1-flash-1017", "efforts": ["low", "high", "max"], "defaultEffort": "high"}
+  ],
   "_backendsDoc": "schemaVersion 2: per-backend profiles. GPT, Claude, and Fugu share /router discovery. FCC is isolated at /router/fcc because Claude Code 2.1.237 has one process-wide context guard and cannot safely mix its 52k context with 200k models. --backend selects the pinned initial model and family aliases.",
   "backends": {
     "gpt": {
@@ -233,7 +282,7 @@
         "opusName": "Claude Opus 5.5",
         "sonnetName": "Claude Sonnet 5.5",
         "haikuName": "Claude Haiku 5.5",
-        "fableDescription": "Claude Fable 5.1 final synthesis and quality-gate route via Anthropic native (OAuth)",
+        "fableDescription": "Claude Fable 5.1 route via Anthropic native (OAuth)",
         "opusDescription": "Claude Opus 5.5 mothership route via Anthropic native (OAuth, 2026-09-23 default)",
         "sonnetDescription": "Claude Sonnet 5.5 standard work and implementation route via Anthropic native (OAuth)",
         "haikuDescription": "Claude Haiku 5.5 fast background route via Anthropic native (OAuth)"
@@ -297,6 +346,41 @@
         "opusDescription": "Fugu Ultra — multi-agent council (orchestrates frontier LLMs server-side)",
         "sonnetDescription": "Fugu Ultra — multi-agent council",
         "haikuDescription": "Fugu (fast mini, low-latency single-model)"
+      }
+    },
+    "nanogpt": {
+      "baseUrlPath": "/router",
+      "defaultModel": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+      "subagentModel": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+      "contextTokens": 1000000,
+      "upstreamAliases": {
+        "z-ai/glm-5.3-thinking": "z-ai/glm-5.3:thinking"
+      },
+      "availableModels": [
+        "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
+        "nanogpt/z-ai/glm-5.3-thinking",
+        "nanogpt/z-ai/glm-5.3-flash",
+        "nanogpt/deepseek/deepseek-v4.1-flash-1017"
+      ],
+      "aliases": {
+        "fable": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "opus": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "sonnet": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "haiku": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "subagent": "nanogpt/z-ai/glm-5.3-flash-uncensored"
+      },
+      "capabilities": ["effort", "thinking", "adaptive_thinking"],
+      "display": {
+        "name": "NanoGPT (subscription only)",
+        "fableName": "NanoGPT GLM Uncensored",
+        "opusName": "NanoGPT GLM Uncensored",
+        "sonnetName": "NanoGPT GLM Uncensored",
+        "haikuName": "NanoGPT GLM Uncensored",
+        "fableDescription": "NanoGPT subscription-only route",
+        "opusDescription": "NanoGPT subscription-only route",
+        "sonnetDescription": "NanoGPT subscription-only route",
+        "haikuDescription": "NanoGPT subscription-only route"
       }
     },
     "fcc": {

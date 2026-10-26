@@ -40,6 +40,19 @@ cargo build --release --locked --offline --manifest-path launchers/native/Cargo.
 
 Cargoのオフラインビルドには、依存のキャッシュとWindowsのビルドツールが必要です。単体テストの成功は実アカウントでの動作やインストール成功を保証しません。
 
+## 子モデルを明示して使う
+
+導入済みの別環境で、対応モデルと effort を確認し、必要な子モデルだけ起動時に指定します。
+
+```powershell
+claude-codex --list-subagent-models
+claude-codex --subagent deepseek=high --subagent glm-thinking=max
+```
+
+無指定では、子モデル指定機能が別 provider へ自動変更しません。Agent 定義の注入は新規セッション限定で、resume/continue/fork には対応しません。明示子セッションでは親履歴の fork を拒否し、session、定義、model、effort の整合を照合します。
+
+`python scripts/resolve-subagent.py deepseek=high` は Workflow 向けの事前検査です。実際の Workflow 呼出しを拘束するものではなく、呼出側で明示的な利用者指示と model/effort を確認します。別 provider へ渡す情報は機密を含まない自己完結の作業文脈に限定してください。
+
 ## 本導入の影響
 
 **本導入は明示的に `-Apply` を付けた場合だけ動きます。** このプレビューでは日常環境への導入を推奨しません。まず別のWindowsユーザーまたは使い捨てVMで、対象パス・既存ファイル・バックアップを確認してください。

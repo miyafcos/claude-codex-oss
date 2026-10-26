@@ -16,7 +16,7 @@ use std::{
     time::{Duration, Instant, UNIX_EPOCH},
 };
 
-pub const CONTRACT_SHA: &str = "c750ff8c849b7b5da05689289e0d0d11b107364c7d1418129ea6081e9035b587";
+pub const CONTRACT_SHA: &str = "898b01daba90c0ee9a346bf8dbdd9608f73e0896b2b6613a6968ec21cf5cd88b";
 pub const WAIT_NOTICE: &str =
     "[claude-codex] Waiting for another claude-codex launch to finish starting the proxy...";
 pub fn sha(bytes: &[u8]) -> String {
@@ -115,6 +115,7 @@ fn probe_inner(paths: &Paths, env: &BTreeMap<String, String>) -> io::Result<Prob
         script,
         paths.proxy_home.join(r"scripts\ccproxy-lb.py"),
         paths.proxy_launcher.clone(),
+        paths.home.join(r".claude-codex\config\models.json"),
     ];
     for c in relative_paths {
         inputs.push(site.join("ccproxy").join(&c[1]));

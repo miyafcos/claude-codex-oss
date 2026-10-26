@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "modelsSha256": "d9a9f8eb4acd24d66b5526631c60eb3641da289bb37a17c2805468e1c69d91ad",
+  "registeredModels": [
+    "claude-fable-5-1",
+    "claude-haiku-4-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5",
+    "claude-sonnet-5",
+    "claude-sonnet-5-5",
+    "fcc-default",
+    "fugu",
+    "fugu-ultra",
+    "fugu-ultra-20260615",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-pro-preview",
+    "gemini-3.5-flash",
+    "gpt-5.6-luna",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-6-astra",
+    "gpt-6-luna",
+    "gpt-6-sol",
+    "gpt-6.1-sol",
+    "nanogpt/deepseek/deepseek-v4.1-flash-1017",
+    "nanogpt/z-ai/glm-5.3-flash",
+    "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
+    "nanogpt/z-ai/glm-5.3-flash-uncensored",
+    "nanogpt/z-ai/glm-5.3-thinking"
+  ],
+  "models": [
+    {
+      "name": "sol",
+      "model": "gpt-6.1-sol",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-sol",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-6.1-sol child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-6.1-sol",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "astra",
+      "model": "gpt-6-astra",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-astra",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-6-astra child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-6-astra",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "luna",
+      "model": "gpt-6-luna",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-luna",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-6-luna child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-6-luna",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "gpt-6-sol",
+      "model": "gpt-6-sol",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-gpt-6-sol",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-6-sol child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-6-sol",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "gpt-5-6-sol",
+      "model": "gpt-5.6-sol",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-gpt-5-6-sol",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-5.6-sol child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-5.6-sol",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "gpt-5-6-terra",
+      "model": "gpt-5.6-terra",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-gpt-5-6-terra",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-5.6-terra child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-5.6-terra",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "gpt-5-6-luna",
+      "model": "gpt-5.6-luna",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "max",
+      "agentType": "ccx-gpt-5-6-luna",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-5.6-luna child; fixed effort=max. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-5.6-luna",
+        "effort": "max"
+      }
+    },
+    {
+      "name": "claude-opus",
+      "model": "claude-opus-5-5",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-claude-opus",
+      "backend": "claude",
+      "definition": {
+        "description": "Explicit user-requested claude-opus-5-5 child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "claude-fable",
+      "model": "claude-fable-5-1",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-claude-fable",
+      "backend": "claude",
+      "definition": {
+        "description": "Explicit user-requested claude-fable-5-1 child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "claude-fable-5-1",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "claude-sonnet",
+      "model": "claude-sonnet-5-5",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-claude-sonnet",
+      "backend": "claude",
+      "definition": {
+        "description": "Explicit user-requested claude-sonnet-5-5 child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "claude-sonnet-5-5",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "claude-haiku",
+      "model": "claude-haiku-5-5",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-claude-haiku",
+      "backend": "claude",
+      "definition": {
+        "description": "Explicit user-requested claude-haiku-5-5 child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "claude-haiku-5-5",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "claude-sonnet-5",
+      "model": "claude-sonnet-5",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-claude-sonnet-5",
+      "backend": "claude",
+      "definition": {
+        "description": "Explicit user-requested claude-sonnet-5 child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "claude-sonnet-5",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "glm-uncensored",
+      "model": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+      "efforts": [
+        "low",
+        "high"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-glm-uncensored",
+      "backend": "nanogpt",
+      "definition": {
+        "description": "Explicit user-requested nanogpt/z-ai/glm-5.3-flash-uncensored child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "glm-apex",
+      "model": "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
+      "efforts": [
+        "low",
+        "high",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-glm-apex",
+      "backend": "nanogpt",
+      "definition": {
+        "description": "Explicit user-requested nanogpt/z-ai/glm-5.3-flash-apex-abliterated child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "glm-thinking",
+      "model": "nanogpt/z-ai/glm-5.3-thinking",
+      "efforts": [
+        "high",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-glm-thinking",
+      "backend": "nanogpt",
+      "definition": {
+        "description": "Explicit user-requested nanogpt/z-ai/glm-5.3-thinking child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "nanogpt/z-ai/glm-5.3-thinking",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "glm-flash",
+      "model": "nanogpt/z-ai/glm-5.3-flash",
+      "efforts": [
+        "low",
+        "high",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-glm-flash",
+      "backend": "nanogpt",
+      "definition": {
+        "description": "Explicit user-requested nanogpt/z-ai/glm-5.3-flash child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "nanogpt/z-ai/glm-5.3-flash",
+        "effort": "high"
+      }
+    },
+    {
+      "name": "deepseek",
+      "model": "nanogpt/deepseek/deepseek-v4.1-flash-1017",
+      "efforts": [
+        "low",
+        "high",
+        "max"
+      ],
+      "defaultEffort": "high",
+      "agentType": "ccx-deepseek",
+      "backend": "nanogpt",
+      "definition": {
+        "description": "Explicit user-requested nanogpt/deepseek/deepseek-v4.1-flash-1017 child; fixed effort=high. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "nanogpt/deepseek/deepseek-v4.1-flash-1017",
+        "effort": "high"
+      }
+    }
+  ]
+}

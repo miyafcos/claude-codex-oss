@@ -4,6 +4,28 @@
   "permissions": {
     "defaultMode": "default"
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python.exe",
+            "args": [
+              "-B",
+              "-X",
+              "utf8",
+              "-c",
+              "import os,sys,runpy;from pathlib import Path;sys.exit(0) if os.environ.get('CLAUDE_CODEX_SUBAGENT_CONTEXT')!='claude-codex' else None;p=Path(os.environ['CLAUDE_CONFIG_DIR']).parent.parent/'.claude/scripts/agent-model-guard.py';sys.path.insert(0,str(p.parent));sys.argv=['agent-model-guard.py','--ccx-only'];runpy.run_path(str(p),run_name='__main__')"
+            ],
+            "timeout": 10,
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  },
   "modelPicker": {
     "replaceBuiltInOptions": true,
     "options": [
@@ -39,6 +61,36 @@
         "model": "claude-haiku-5-5",
         "label": "Claude Haiku 5.5",
         "description": "軽い検索・抽出"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-flash-uncensored",
+        "label": "NanoGPT · GLM 5.3 Flash Uncensored",
+        "description": "サブスク限定・無検閲派生（試用）",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
+        "label": "NanoGPT · Apex Flash 1 Abliterated",
+        "description": "サブスク限定・拒否動作を変更した実験版",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-thinking",
+        "label": "NanoGPT · GLM 5.3 Thinking",
+        "description": "サブスク限定・通常モデルとの比較用",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/z-ai/glm-5.3-flash",
+        "label": "NanoGPT · GLM 5.3 Flash",
+        "description": "サブスク限定・通常Flashとの比較用",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
+        "model": "nanogpt/deepseek/deepseek-v4.1-flash-1017",
+        "label": "NanoGPT · DeepSeek V4.1 Flash 1017",
+        "description": "サブスク限定・DeepSeek比較用",
+        "behavesAs": "claude-opus-5-5"
       }
     ]
   }

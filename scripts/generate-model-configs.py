@@ -8,6 +8,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from subagent_models import build_registry, child_guard_hook
+
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MODELS_JSON = REPO_ROOT / "runtime" / "models.json"
@@ -15,6 +18,7 @@ SETTINGS_JSON = REPO_ROOT / "runtime" / "claude-codex" / "settings.json"
 MODEL_DEFAULTS_PY = REPO_ROOT / "patches" / "ccproxy" / "plugins" / "codex" / "model_defaults.py"
 PROXY_CONFIG_TOML = REPO_ROOT / "runtime" / "claude-codex-proxy" / "config.toml"
 REASONING_MODELS_PY = REPO_ROOT / "patches" / "ccproxy" / "llms" / "formatters" / "anthropic_to_openai" / "reasoning_models.py"
+SUBAGENT_MODELS_JSON = REPO_ROOT / "runtime" / "claude-codex" / "subagent-models.json"
 
 
 def _load_models(path: Path = MODELS_JSON) -> dict[str, Any]:
@@ -33,6 +37,7 @@ def _settings_payload(models: dict[str, Any]) -> dict[str, Any]:
         "permissions": {
             "defaultMode": "default",
         },
+        "hooks": {"PreToolUse": [child_guard_hook()]},
     }
     if "modelPicker" in models:
         settings["modelPicker"] = models["modelPicker"]
@@ -107,6 +112,8 @@ def render_proxy_config(models: dict[str, Any]) -> str:
     # models are fetched by the adapter instead of being duplicated here.
     if "fcc" in backends:
         enabled.append("fcc")
+    if "nanogpt" in backends:
+        enabled.append("nanogpt")
     enabled_literal = "[" + ", ".join(f'"{name}"' for name in enabled) + "]"
     lines = [
         f"enabled_plugins = {enabled_literal}",
@@ -224,6 +231,7 @@ def expected_files(models: dict[str, Any]) -> dict[Path, str]:
     reasoning_models = tuple(gpt["availableModels"]) if "effort" in gpt.get("capabilities", []) else ()
     max_models = reasoning_models if "max_effort" in gpt.get("capabilities", []) else ()
     return {
+        SUBAGENT_MODELS_JSON: json.dumps(build_registry(models), indent=2, ensure_ascii=False) + "\n",
         REASONING_MODELS_PY: (
             '"""Generated from runtime/models.json; do not edit by hand."""\n\n'
             f"REASONING_MODELS = {reasoning_models!r}\n"
@@ -258,7 +266,8 @@ def check(models: dict[str, Any]) -> list[Path]:
 def write(models: dict[str, Any]) -> None:
     for path, expected in expected_files(models).items():
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(expected, encoding="utf-8", newline="\n")
+        if not path.exists() or _normalized(path.read_text(encoding="utf-8")) != _normalized(expected):
+            path.write_text(expected, encoding="utf-8", newline="\n")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

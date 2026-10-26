@@ -48,6 +48,7 @@ _FORMAT_CHAINS: dict[str, list[str]] = {
     "gemini_cli": [FORMAT_ANTHROPIC_MESSAGES],
     "fugu": [FORMAT_ANTHROPIC_MESSAGES],
     "fcc": [FORMAT_ANTHROPIC_MESSAGES],
+    "nanogpt": [FORMAT_ANTHROPIC_MESSAGES],
 }
 
 # Model-name prefix -> backend plugin name.
@@ -65,12 +66,14 @@ _PICKER_BACKENDS = {
     "claude": "claude_api",
     "fugu": "fugu",
     "fcc": "fcc",
+    "nanogpt": "nanogpt",
 }
 _PICKER_LABELS = {
     "codex": "Codex",
     "claude_api": "Claude",
     "fugu": "Fugu",
     "fcc": "Open",
+    "nanogpt": "NanoGPT",
 }
 
 
@@ -146,6 +149,8 @@ def _select_legacy_backend(model: str) -> str:
         return "gemini_cli"
     if m.startswith("fugu"):
         return "fugu"
+    if m.startswith("nanogpt/"):
+        return "nanogpt"
     if _is_fcc_upstream_model(m):
         return _FCC_BACKEND
     # gpt-*, o1-*, o3-*, and anything unknown go to codex (which has its own
@@ -414,7 +419,7 @@ async def list_models(request: Request, auth: ConditionalAuthDep) -> dict[str, A
         backends = (
             (_FCC_BACKEND,)
             if fcc_profile
-            else ("codex", "claude_api", "fugu", _FCC_BACKEND)
+            else ("codex", "claude_api", "fugu", _FCC_BACKEND, "nanogpt")
         )
         for backend in backends:
             try:
@@ -474,6 +479,7 @@ def _picker_model_id(backend: str, model_id: str) -> str:
         "claude_api": "claude",
         "fugu": "fugu",
         "fcc": "fcc",
+        "nanogpt": "nanogpt",
     }[backend]
     # Keep the final segment identical to the launcher's bare alias. Claude
     # Code accepts gateway aliases when the selected model matches the card's

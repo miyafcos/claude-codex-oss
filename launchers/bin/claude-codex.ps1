@@ -35,6 +35,116 @@ else {
 }
 $CliArgs = @($args)
 
+function Invoke-SubagentSelector {
+    param([switch]$List, [string]$Payload, [switch]$FullProfile)
+    $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
+    $selector = Join-Path $repoRoot "scripts\resolve-subagent.py"
+    $modelsPath = Join-Path $repoRoot "runtime\models.json"
+    $registryPath = Join-Path $repoRoot "runtime\claude-codex\subagent-models.json"
+    if (-not (Test-Path -LiteralPath $selector)) {
+        $selector = Join-Path $BaseConfigDir "resolve-subagent.py"
+    }
+    $selectorConfigDir = if ($FullProfile) { $BaseConfigDir } else { $ConfigDir }
+    if ($FullProfile -or (Test-Path -LiteralPath (Join-Path $selectorConfigDir "models.json"))) {
+        $modelsPath = Join-Path $selectorConfigDir "models.json"
+        $registryPath = Join-Path $selectorConfigDir "subagent-models.json"
+    }
+    $python = $env:CLAUDE_CODEX_PYTHON_EXE
+    if (-not $python) {
+        $python = Join-Path $repoRoot ".venv\Scripts\python.exe"
+        if (-not (Test-Path -LiteralPath $python)) {
+            $command = Get-Command "python.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($null -ne $command) { $python = $command.Source }
+        }
+    }
+    if (-not $python -or -not (Test-Path -LiteralPath $python) -or -not (Test-Path -LiteralPath $selector)) {
+        throw "Explicit child selector/Python is missing. Prepare the reviewed selector files before using child options."
+    }
+    $selectorArgs = @("-B", "-X", "utf8", $selector, "--models-json", $modelsPath, "--registry", $registryPath)
+    if ($List) {
+        & $python @selectorArgs --list
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        return
+    }
+    # stdin avoids Windows native JSON quoting and preserves non-ASCII paths.
+    $priorEncoding = $OutputEncoding
+    try {
+        $OutputEncoding = New-Object Text.UTF8Encoding($false)
+        # Escape UTF-16 code units before the PS5.1 native pipeline: its host
+        # code page can otherwise replace non-ASCII path characters with '?'.
+        $asciiPayload = [regex]::Replace($Payload, '[^\x00-\x7f]', {
+            param($match)
+            '\u{0:x4}' -f [int][char]$match.Value
+        })
+        $result = @($asciiPayload | & $python @selectorArgs --prepare)
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        return (($result -join [Environment]::NewLine) | ConvertFrom-Json)
+    }
+    finally { $OutputEncoding = $priorEncoding }
+}
+
+$childSelections = @()
+$listChildModels = $false
+$childArgs = @()
+for ($i = 0; $i -lt $CliArgs.Count; $i++) {
+    $arg = [string]$CliArgs[$i]
+    if ($arg -eq "--") {
+        $childArgs += $CliArgs[$i..($CliArgs.Count - 1)]
+        break
+    }
+    if ($arg -ceq "--list-subagent-models") { $listChildModels = $true }
+    elseif ($arg -ceq "--subagent") {
+        if ($i + 1 -ge $CliArgs.Count -or ([string]$CliArgs[$i + 1]).StartsWith("-")) {
+            throw "--subagent requires name or name=effort; use --list-subagent-models"
+        }
+        $i++
+        $childSelections += [string]$CliArgs[$i]
+    }
+    elseif ($arg.StartsWith("--subagent=", [StringComparison]::Ordinal)) {
+        $childSelections += $arg.Substring("--subagent=".Length)
+    }
+    else { $childArgs += $arg }
+}
+$CliArgs = @($childArgs)
+if ($listChildModels) {
+    if ($childSelections.Count -gt 0 -or $CliArgs.Count -gt 0) { throw "--list-subagent-models must be used alone" }
+    Invoke-SubagentSelector -List
+    exit 0
+}
+if ($childSelections.Count -gt 0) {
+    if ($skillProfile -eq "slim") {
+        $requiredChildFiles = @("models.json", "settings.json", "subagent-models.json", "resolve-subagent.py", "subagent_models.py")
+        $requiredChildPaths = @($requiredChildFiles | ForEach-Object { Join-Path $ConfigDir $_ })
+        $requiredChildPaths += @("agent-model-guard.py", "subagent_models.py") | ForEach-Object { Join-Path (Join-Path $HomeDir ".claude\scripts") $_ }
+        foreach ($requiredChildPath in $requiredChildPaths) {
+            if (-not (Test-Path -LiteralPath $requiredChildPath -PathType Leaf)) {
+                [Console]::Error.WriteLine("[claude-codex] Explicit slim child configuration is missing: $requiredChildPath")
+                exit 2
+            }
+        }
+    }
+    $selectionInput = @{
+        selections = @($childSelections)
+        args = @($CliArgs)
+        configDir = $ConfigDir
+        sessionDir = (Join-Path $StateDir "subagent-sessions")
+    } | ConvertTo-Json -Depth 10 -Compress
+    $childPrepared = Invoke-SubagentSelector -Payload $selectionInput
+    $CliArgs = @($childPrepared.args)
+    $env:CLAUDE_CODEX_SUBAGENT_CONTEXT = "claude-codex"
+    $env:CLAUDE_CODEX_SUBAGENT_SESSION = [string]$childPrepared.sessionPath
+    $env:CLAUDE_CODEX_SUBAGENT_AGENTS = [string]$childPrepared.agentsJson
+    foreach ($selected in $childPrepared.selected) {
+        [Console]::Error.WriteLine(("[claude-codex] Explicit child {0}: model={1} effort={2} defaulted={3}. User request required; no fork." -f $selected.agentType, $selected.model, $selected.effort, $selected.defaultedEffort))
+    }
+}
+else {
+    # Do not inherit a previous launcher's session-only exception.
+    $env:CLAUDE_CODEX_SUBAGENT_CONTEXT = $null
+    $env:CLAUDE_CODEX_SUBAGENT_SESSION = $null
+    $env:CLAUDE_CODEX_SUBAGENT_AGENTS = $null
+}
+
 # Resolve the母艦 (main-loop) backend: --backend <name> / --backend=<name> from
 # the CLI takes precedence, then CLAUDE_CODEX_BACKEND env, then models.json
 # defaultBackend (resolved inside Get-ModelConfig), then "gpt". The flag is
@@ -486,7 +596,7 @@ function Test-RouterDispatch {
 # Test-ProxyFastPath still mirrors Start-Proxy and that Get-ProxyRuntimeProbe
 # still covers every Get-RuntimeGeneration input;
 # tests/test_launcher_proxy_fastpath.py checks both.
-$ProxyScriptContractSha256 = "c750ff8c849b7b5da05689289e0d0d11b107364c7d1418129ea6081e9035b587"
+$ProxyScriptContractSha256 = "898b01daba90c0ee9a346bf8dbdd9608f73e0896b2b6613a6968ec21cf5cd88b"
 
 function Get-ProxyRuntimeProbe {
     param([string]$ProxyHome, [string]$PluginRoot, [string]$ProxyLauncherPath)
@@ -537,6 +647,7 @@ function Get-ProxyRuntimeProbe {
             $paths.Add((Join-Path $ProxyHome $name))
         }
         $paths.Add($ProxyLauncherPath)
+        $paths.Add((Join-Path $HomeDir ".claude-codex\config\models.json"))
         foreach ($relative in $relatives) {
             $paths.Add((Join-Path $sitePackage $relative))
         }
@@ -775,8 +886,13 @@ function Save-ProxyFastPathCache {
 }
 
 New-Item -ItemType Directory -Force -Path $ConfigDir, $DataDir, $StateDir | Out-Null
-if ($skillProfile -eq "slim") {
-    foreach ($name in @("settings.json", "empty-mcp.json", "models.json", "ultracode.settings.json", "fcc-picker.settings.json", "fcc-ultracode.settings.json", "orchestration-policy.md")) {
+if ($skillProfile -eq "slim" -and $childSelections.Count -eq 0) {
+    $fullChildRegistry = Join-Path $BaseConfigDir "subagent-models.json"
+    $slimChildRegistry = Join-Path $ConfigDir "subagent-models.json"
+    if ((Test-Path -LiteralPath $fullChildRegistry) -or (Test-Path -LiteralPath $slimChildRegistry)) {
+        $null = Invoke-SubagentSelector -List -FullProfile
+    }
+    foreach ($name in @("settings.json", "empty-mcp.json", "models.json", "subagent-models.json", "ultracode.settings.json", "fcc-picker.settings.json", "fcc-ultracode.settings.json", "orchestration-policy.md")) {
         $source = Join-Path $BaseConfigDir $name
         $target = Join-Path $ConfigDir $name
         if (Test-Path $source) {
@@ -1095,6 +1211,32 @@ if (-not $hasPrint -and $env:MYCMUX_PANE_SESSION_ID -and $mycmuxTabId -match '^[
     $extraArgs += @("--session-id", $iconSessionId)
 }
 $allArgs = @($extraArgs + $CliArgs)
+if ($childSelections.Count -gt 0 -and [IO.Path]::GetExtension($ClaudeExe) -ieq ".exe") {
+    # PS5.1's native binder drops empty arguments and embedded JSON quotes.
+    # This opt-in path uses CRT quoting so the final --agents exactly matches
+    # the session record; the existing no-selection path stays unchanged.
+    $nativeArgs = @($allArgs | ForEach-Object {
+        $escaped = [regex]::Replace([string]$_, '(\\*)"', '$1$1\"')
+        $escaped = [regex]::Replace($escaped, '(\\+)$', '$1$1')
+        '"' + $escaped + '"'
+    })
+    $startInfo = New-Object Diagnostics.ProcessStartInfo
+    $startInfo.FileName = $ClaudeExe
+    $startInfo.Arguments = $nativeArgs -join " "
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $hasPrint
+    $startInfo.RedirectStandardInput = $hasPrint -and -not $env:CLAUDE_CODEX_KEEP_STDIN
+    $childProcess = New-Object Diagnostics.Process
+    $childProcess.StartInfo = $startInfo
+    try {
+        $null = $childProcess.Start()
+        if ($startInfo.RedirectStandardInput) { $childProcess.StandardInput.Close() }
+        $childProcess.WaitForExit()
+        $childExitCode = $childProcess.ExitCode
+    }
+    finally { $childProcess.Dispose() }
+    exit $childExitCode
+}
 if ($hasPrint -and -not $env:CLAUDE_CODEX_KEEP_STDIN) {
     @() | & $ClaudeExe @allArgs
 }

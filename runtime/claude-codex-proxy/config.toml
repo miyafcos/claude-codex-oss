@@ -1,4 +1,4 @@
-enabled_plugins = ["codex", "oauth_codex", "claude_api", "oauth_claude", "dispatcher", "gemini_cli", "fugu", "fcc"]
+enabled_plugins = ["codex", "oauth_codex", "claude_api", "oauth_claude", "dispatcher", "gemini_cli", "fugu", "fcc", "nanogpt"]
 
 [logging]
 level = "WARNING"
