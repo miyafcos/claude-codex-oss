@@ -168,21 +168,22 @@ def test_model_picker_preserves_existing_models_and_adds_nanogpt() -> None:
 
     assert picker == models["modelPicker"]
     assert picker["replaceBuiltInOptions"] is True
-    assert [option["model"] for option in picker["options"][:6]] == [
+    assert [option["model"] for option in picker["options"][:7]] == [
         "gpt-6.1-sol",
+        "gpt-6.1-terra",
         "gpt-6-astra",
         "gpt-6-luna",
         "claude-opus-5-5",
         "claude-sonnet-5-5",
         "claude-haiku-5-5",
     ]
-    assert [option["model"] for option in picker["options"][6:]] == models["backends"]["nanogpt"]["availableModels"]
-    assert len(picker["options"][6:]) == 5
+    assert [option["model"] for option in picker["options"][7:]] == models["backends"]["nanogpt"]["availableModels"]
+    assert len(picker["options"][7:]) == 5
     assert "nanogpt" in gen.render_proxy_config(models)
     assert all(option["label"] and option["description"] for option in picker["options"])
     assert all(
         option["behavesAs"] == "claude-opus-5-5"
-        for option in picker["options"][:3]
+        for option in picker["options"][:4]
     )
     routable = set(models["availableModels"])
     for backend in models["backends"].values():
@@ -191,6 +192,17 @@ def test_model_picker_preserves_existing_models_and_adds_nanogpt() -> None:
     assert {"gpt-6-sol", "gpt-6-luna", "gpt-5.6-sol"} <= routable
     assert "availableModels" not in settings
     assert "model" not in settings
+
+
+def test_terra_is_discoverable_and_routed_without_changing_defaults() -> None:
+    models = gen._load_models(_MODELS_JSON)
+    model = "gpt-6.1-terra"
+    assert model in models["availableModels"]
+    assert model in models["backends"]["gpt"]["availableModels"]
+    assert {"match": model, "target": model, "kind": "exact"} in models["mappingRules"]
+    assert any(card["id"] == model for card in models["modelCards"])
+    assert any(item["model"] == model for item in models["subagentModels"])
+    assert models["defaultModel"] == "gpt-6.1-sol"
 
 
 def test_fcc_picker_overlay_restores_backend_discovery() -> None:

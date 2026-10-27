@@ -12,6 +12,12 @@
         "behavesAs": "claude-opus-5-5"
       },
       {
+        "model": "gpt-6.1-terra",
+        "label": "GPT-6.1 Terra",
+        "description": "Visual reasoning and computer use",
+        "behavesAs": "claude-opus-5-5"
+      },
+      {
         "model": "gpt-6-astra",
         "label": "GPT-6 Astra",
         "description": "独立検証・難所",
@@ -72,6 +78,7 @@
   },
   "availableModels": [
     "gpt-6.1-sol",
+    "gpt-6.1-terra",
     "gpt-6-astra",
     "gpt-6-sol",
     "gpt-6-luna",
@@ -115,6 +122,11 @@
       "owned_by": "openai"
     },
     {
+      "id": "gpt-6.1-terra",
+      "created": 1792972800,
+      "owned_by": "openai"
+    },
+    {
       "id": "gpt-6-astra",
       "created": 1788393600,
       "owned_by": "openai"
@@ -149,6 +161,11 @@
     {
       "match": "gpt-6.1-sol",
       "target": "gpt-6.1-sol",
+      "kind": "exact"
+    },
+    {
+      "match": "gpt-6.1-terra",
+      "target": "gpt-6.1-terra",
       "kind": "exact"
     },
     {
@@ -189,6 +206,7 @@
   ],
   "subagentModels": [
     {"name": "sol", "model": "gpt-6.1-sol", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
+    {"name": "terra", "model": "gpt-6.1-terra", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "low"},
     {"name": "astra", "model": "gpt-6-astra", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
     {"name": "luna", "model": "gpt-6-luna", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
     {"name": "gpt-6-sol", "model": "gpt-6-sol", "efforts": ["low", "medium", "high", "xhigh", "max"], "defaultEffort": "max"},
@@ -215,6 +233,7 @@
       "subagentModel": "gpt-6.1-sol",
       "availableModels": [
         "gpt-6.1-sol",
+        "gpt-6.1-terra",
         "gpt-6-astra",
         "gpt-6-sol",
         "gpt-6-luna",

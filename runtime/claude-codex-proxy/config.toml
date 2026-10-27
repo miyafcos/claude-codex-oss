@@ -15,6 +15,11 @@ target = "gpt-6.1-sol"
 kind = "exact"
 
 [[plugins.codex.model_mappings]]
+match = "gpt-6.1-terra"
+target = "gpt-6.1-terra"
+kind = "exact"
+
+[[plugins.codex.model_mappings]]
 match = "gpt-6-astra"
 target = "gpt-6-astra"
 kind = "exact"
@@ -52,6 +57,12 @@ kind = "prefix"
 [[plugins.codex.models_endpoint]]
 id = "gpt-6.1-sol"
 root = "gpt-6.1-sol"
+owned_by = "openai"
+permission = []
+
+[[plugins.codex.models_endpoint]]
+id = "gpt-6.1-terra"
+root = "gpt-6.1-terra"
 owned_by = "openai"
 permission = []
 

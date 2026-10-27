@@ -18,6 +18,14 @@ DEFAULT_CODEX_MODEL_CARDS: list[ModelCard] = [
         parent=None,
     ),
     ModelCard(
+        id='gpt-6.1-terra',
+        created=1792972800,
+        owned_by='openai',
+        permission=[],
+        root='gpt-6.1-terra',
+        parent=None,
+    ),
+    ModelCard(
         id='gpt-6-astra',
         created=1788393600,
         owned_by='openai',
@@ -70,6 +78,7 @@ DEFAULT_CODEX_MODEL_CARDS: list[ModelCard] = [
 
 DEFAULT_CODEX_MODEL_MAPPINGS: list[ModelMappingRule] = [
     ModelMappingRule(match='gpt-6.1-sol', target='gpt-6.1-sol', kind='exact'),
+    ModelMappingRule(match='gpt-6.1-terra', target='gpt-6.1-terra', kind='exact'),
     ModelMappingRule(match='gpt-6-astra', target='gpt-6-astra', kind='exact'),
     ModelMappingRule(match='gpt-6-sol', target='gpt-6-sol', kind='exact'),
     ModelMappingRule(match='gpt-6-luna', target='gpt-6-luna', kind='exact'),

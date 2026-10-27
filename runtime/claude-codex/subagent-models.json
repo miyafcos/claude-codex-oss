@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "modelsSha256": "d9a9f8eb4acd24d66b5526631c60eb3641da289bb37a17c2805468e1c69d91ad",
+  "modelsSha256": "ee6c5c3a0c7542f1e6ecdedc2aa031103d5c2160f916c5c0e2fba5624856b3f8",
   "registeredModels": [
     "claude-fable-5-1",
     "claude-haiku-4-5",
@@ -22,6 +22,7 @@
     "gpt-6-luna",
     "gpt-6-sol",
     "gpt-6.1-sol",
+    "gpt-6.1-terra",
     "nanogpt/deepseek/deepseek-v4.1-flash-1017",
     "nanogpt/z-ai/glm-5.3-flash",
     "nanogpt/z-ai/glm-5.3-flash-apex-abliterated",
@@ -47,6 +48,26 @@
         "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
         "model": "gpt-6.1-sol",
         "effort": "max"
+      }
+    },
+    {
+      "name": "terra",
+      "model": "gpt-6.1-terra",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "low",
+      "agentType": "ccx-terra",
+      "backend": "gpt",
+      "definition": {
+        "description": "Explicit user-requested gpt-6.1-terra child; fixed effort=low. Do not select automatically. Use Workflow for a different effort.",
+        "prompt": "Work only on the user's explicitly requested model-specific subtask. Accept only non-confidential, self-contained task context. Never fork or request parent history. Do not choose another provider, recursively delegate, or silently change effort.",
+        "model": "gpt-6.1-terra",
+        "effort": "low"
       }
     },
     {
